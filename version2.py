@@ -33,6 +33,7 @@ def deposit():
     except ValueError:
         print("Invalid input, please enter a valid number")
 
+
 # Withdraw
 def withdraw_amount():
     try:
@@ -53,10 +54,10 @@ def withdraw_amount():
             print("Insuffencient Balance")
         else:
             new_balance = current_balance - withdraw
-            cursor.execute("UPDATE customer SET balance = ?, created_at = ? WHERE id = 1", new_balance, created_at)
-        
+            cursor.execute("UPDATE customer SET balance = ?, created_at = ? WHERE id = 1", (new_balance, created_at))
+            conn.commit()
             
-            print(f"You withdrew ${withdraw} successfully")
+            print(f"You withdrew ${withdraw} successfully. New Balance is {new_balance}")
     except ValueError:
         print("Invalid input, please enter a valid number")
 
@@ -64,7 +65,12 @@ def withdraw_amount():
 
 # check balance
 def check_balance():
-    print(f"Your Account Balance is ${balance}")
+    cursor.execute("SELECT balance FROM customer WHERE id = 1")
+    result = cursor.fetchone()
+    if result:
+        print(f"Your Account Balance is ${result[0]}")
+    else:
+        print("No Account Found. First Deposit First!")
 
 
 def menu():
@@ -75,6 +81,7 @@ def menu():
     print("4. Exit")
     print("")
 
+
 # Main menu of the program
 def main_menu():
     while True:
@@ -83,11 +90,11 @@ def main_menu():
             choice = int(input("Enter your choice: "))
             if choice == 1:
                 deposit()
-            # elif choice == 2:
-            #     withdraw_amount()
-            # elif choice == 3:
-            #     check_balance()
-            # elif choice == 4:
+            elif choice == 2:
+                withdraw_amount()
+            elif choice == 3:
+                check_balance()
+            elif choice == 4:
                 break
             else:
                 print("Invalid choice!")
